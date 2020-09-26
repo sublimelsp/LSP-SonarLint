@@ -1,0 +1,17 @@
+[
+    {
+        "caption": "Preferences: LSP-SonarLint Settings",
+        "command": "edit_settings",
+        "args": {
+            "base_file": "${packages}/LSP-SonarLint/LSP-SonarLint.sublime-settings",
+            "default": "// Settings in here override those in \"LSP-SonarLint/LSP-SonarLint.sublime-settings\"\n{\n\t$0\n}\n"
+        }
+    },
+    {
+        "caption": "LSP-SonarLint: Refresh Diagnostics",
+        "command": "lsp_execute",
+        "args": {
+            "command_name": "SonarLint.RefreshDiagnostics"
+        }
+    }
+]
