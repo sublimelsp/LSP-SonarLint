@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+set -e
+
+function set-output
+{
+    local value="${2//'%'/'%25'}"
+    local value="${value//$'\n'/'%0A'}"
+    echo "::set-output name=$1::${value//$'\r'/'%0D'}"
+}
 
 function main
 {
@@ -22,6 +30,7 @@ function main
     pushd out && zip -q -r LSP-SonarLint.zip . && popd
     mv out/LSP-SonarLint.zip .
     rm -rf out
+    set-output artifact LSP-SonarLint.zip
 }
 
 main "$@"
