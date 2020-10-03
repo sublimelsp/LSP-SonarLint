@@ -9,11 +9,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Create release files
-        run: ./make.sh
+        run: make
         id: create-release-files
       - name: Create release
         id: create-release
@@ -32,6 +32,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./${{ steps.create-release-files.outputs.artifact }}
-          asset_name: ${{ steps.create-release-files.outputs.artifact }}
+          asset_path: .out/release.zip
+          asset_name: LSP-SonarLint.zip
           asset_content_type: application/zip
