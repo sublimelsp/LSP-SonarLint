@@ -1,7 +1,7 @@
 from html.parser import HTMLParser
 from LSP.plugin import AbstractPlugin
 from LSP.plugin import Session
-from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Iterable
+from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Iterable, Callable
 import sublime_plugin
 import sublime
 import mdpopups
@@ -35,7 +35,8 @@ class HTMLParser(html.parser.HTMLParser):
         elif tag == "code":
             self.result += "`"
         elif tag == "p":
-            self.result += "\n"
+            if self.result:
+                self.result += "\n"
         else:
             attributes = ""
             for name, value in attrs:
@@ -68,19 +69,21 @@ class SonarLint(AbstractPlugin):
             "name": "LSP-{}".format(cls.name())
         }
 
-    def on_pre_server_command(self, command: Mapping[str, Any]) -> Optional[Promise]:
+    def on_pre_server_command(self, command: Mapping[str, Any], done: Callable[[], None]) -> bool:
         session = self.weaksession()
         if not session:
-            return Promise.resolve()
+            return False
         window = session.window
         cmd = command["command"]
         args = command["arguments"]
         if cmd == "SonarLint.OpenRuleDesc":
-            return self._handle_open_rule_description(session, window, args)
+            return self._handle_open_rule_description(session, window, args, done)
         if cmd == "SonarLint.DeactivateRule":
-            return self._handle_deactivate_rule(window, args)
+            return self._handle_deactivate_rule(window, args, done)
+        return False
 
-    def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: List[str]) -> Promise:
+    def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: List[str],
+                                      done: Callable[[], None]) -> bool:
         view = window.active_view()
         file_name = view.file_name()
         language_id = "text"
@@ -90,7 +93,7 @@ class SonarLint(AbstractPlugin):
             if sb:
                 language_id = sb.language_id
         parser = HTMLParser(language_id)
-        parser.feed("<h2>{}</h2>{}".format(args[1], args[2]))
+        parser.feed("<p><i>{}</i></p>{}".format(args[1], args[2]))
         mdpopups.new_html_sheet(
             window=window,
             name=args[0],
@@ -98,9 +101,10 @@ class SonarLint(AbstractPlugin):
             css=css().sheets,
             wrapper_class=css().sheets_classname,
             flags=sublime.ADD_TO_SELECTION_SEMI_TRANSIENT)
-        return Promise.resolve()
+        done()
+        return True
 
-    def _handle_deactivate_rule(self, window: sublime.Window, args: List[str]) -> Promise:
+    def _handle_deactivate_rule(self, window: sublime.Window, args: List[str], done: Callable[[], None]) -> bool:
         data = window.project_data()
         root = data
         rule = args[0]
@@ -114,6 +118,7 @@ class SonarLint(AbstractPlugin):
         def report_to_user() -> None:
             fmt = 'The rule "{}" was added to the excluded list for SonarLint in your window project data.'
             sublime.message_dialog(fmt.format(rule))
+            done()
 
         sublime.set_timeout(report_to_user)
-        return Promise.resolve()
+        return True
