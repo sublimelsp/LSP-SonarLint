@@ -1,16 +1,12 @@
-from html.parser import HTMLParser
 from LSP.plugin import AbstractPlugin
+from LSP.plugin import css
+from LSP.plugin import filename_to_uri
 from LSP.plugin import Session
 from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Iterable, Callable
-import sublime_plugin
-import sublime
-import mdpopups
 import html.parser
-
-# TODO: Expose in public API
-from LSP.plugin.core.css import css
-from LSP.plugin.core.promise import Promise
-from LSP.plugin.core.url import filename_to_uri
+import mdpopups
+import sublime
+import sublime_plugin
 
 
 def _deeper_dict(d: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -110,13 +106,15 @@ class SonarLint(AbstractPlugin):
         rule = args[0]
         data = _deeper_dict(data, "settings")
         data = _deeper_dict(data, "LSP")
-        data = _deeper_dict(data, "LSP-SonarLint")
+        data = _deeper_dict(data, self.name())
         data = _deeper_dict(data, "settings")
-        data.setdefault("sonarlint.excludedRules", []).append(rule)
+        data.setdefault("sonarlint.rules", {})[rule] = {"level": "off"}
         window.set_project_data(root)
 
         def report_to_user() -> None:
-            fmt = 'The rule "{}" was added to the excluded list for SonarLint in your window project data.'
+            fmt = 'The rule "{}" was added to the excluded list for SonarLint in your window project data. '\
+                  'If your window is maintained by a sublime project, the server should be restarted automatically. '\
+                  'Otherwise, you need to restart the server manually.'
             sublime.message_dialog(fmt.format(rule))
             done()
 
