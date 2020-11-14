@@ -1,8 +1,10 @@
 from LSP.plugin import AbstractPlugin
 from LSP.plugin import css
 from LSP.plugin import filename_to_uri
+from LSP.plugin import register_plugin
 from LSP.plugin import Session
-from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Iterable, Callable
+from LSP.plugin import unregister_plugin
+from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Callable
 import html.parser
 import mdpopups
 import sublime
@@ -120,3 +122,11 @@ class SonarLint(AbstractPlugin):
 
         sublime.set_timeout(report_to_user)
         return True
+
+
+def plugin_loaded() -> None:
+    register_plugin(SonarLint)
+
+
+def plugin_unloaded() -> None:
+    unregister_plugin(SonarLint)
