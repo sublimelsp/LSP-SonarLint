@@ -16,7 +16,8 @@ OUT_FILES = \
 	out/LSP-SonarLint.sublime-commands \
 	out/plugin.py \
 	out/LICENSE \
-	out/NOTICE
+	out/NOTICE \
+	out/.no-sublime-package
 
 all: out/release.zip
 
@@ -37,6 +38,9 @@ out/LICENSE: out LICENSE
 
 out/NOTICE: out NOTICE
 	cp NOTICE out/NOTICE
+
+out/.no-sublime-package: out
+	touch out/.no-sublime-package
 
 fetch = curl --silent https://binaries.sonarsource.com/Distribution/$(1)/$(1)-$(2).jar -o out/$(1)-$(2).jar
 
