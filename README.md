@@ -1,10 +1,6 @@
 # LSP-SonarLint
 
 ```
-NOTE: Doesn't yet work on st4000-exploration
-```
-
-```
 NOTE: Not an official SonarSource extension.
 ```
 
