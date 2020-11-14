@@ -110,7 +110,9 @@ class SonarLint(AbstractPlugin):
         data = _deeper_dict(data, "LSP")
         data = _deeper_dict(data, self.name())
         data = _deeper_dict(data, "settings")
-        data.setdefault("sonarlint.rules", {})[rule] = {"level": "off"}
+        data = _deeper_dict(data, "sonarlint")
+        data = _deeper_dict(data, "rules")
+        data[rule] = {"level": "off"}
         window.set_project_data(root)
 
         def report_to_user() -> None:
