@@ -4,11 +4,11 @@
         "-jar",
         "${packages}/${name}/sonarlint-language-server-4.6.0.2652.jar",
         "${port}",
-        "${packages_uri}/${name}/sonar-javascript-plugin-6.4.1.12828.jar",
-        "${packages_uri}/${name}/sonar-java-plugin-6.7.0.23054.jar",
+        "${packages_uri}/${name}/sonar-javascript-plugin-9.1.1.17782.jar",
+        "${packages_uri}/${name}/sonar-java-plugin-7.9.0.28969.jar",
         "${packages_uri}/${name}/sonar-php-plugin-3.9.0.6331.jar",
-        "${packages_uri}/${name}/sonar-python-plugin-3.1.0.7619.jar",
-        "${packages_uri}/${name}/sonar-html-plugin-3.2.0.2082.jar"
+        "${packages_uri}/${name}/sonar-python-plugin-3.9.0.9230.jar",
+        "${packages_uri}/${name}/sonar-html-plugin-3.6.0.3106.jar"
     ],
     "languages": [
         {
