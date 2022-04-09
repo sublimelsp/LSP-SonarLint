@@ -8,7 +8,6 @@ from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Ca
 import html.parser
 import mdpopups
 import sublime
-import sublime_plugin
 
 
 def _deeper_dict(d: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -75,21 +74,28 @@ class SonarLint(AbstractPlugin):
         cmd = command["command"]
         args = command["arguments"]
         if cmd == "SonarLint.OpenRuleDesc":
-            return self._handle_open_rule_description(session, window, args, done)
+            try:
+                self._handle_open_rule_description(session, window, args)
+            except Exception:
+                pass
+            done()
+            return True
         if cmd == "SonarLint.DeactivateRule":
-            return self._handle_deactivate_rule(window, args, done)
+            self._handle_deactivate_rule(window, args, done)
+            return True
         return False
 
-    def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: List[str],
-                                      done: Callable[[], None]) -> bool:
+    def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: List[str]) -> None:
         view = window.active_view()
+        if not view:
+            return
         file_name = view.file_name()
         language_id = "text"
         if file_name:
             uri = filename_to_uri(file_name)
             sb = session.get_session_buffer_for_uri_async(uri)
             if sb:
-                language_id = sb.language_id
+                language_id = sb.get_language_id() or "txt"
         parser = HTMLParser(language_id)
         parser.feed("<p><i>{}</i></p>{}".format(args[1], args[2]))
         mdpopups.new_html_sheet(
@@ -98,12 +104,13 @@ class SonarLint(AbstractPlugin):
             contents=parser.result,
             css=css().sheets,
             wrapper_class=css().sheets_classname,
-            flags=sublime.ADD_TO_SELECTION_SEMI_TRANSIENT)
-        done()
-        return True
+            flags=sublime.ADD_TO_SELECTION | sublime.SEMI_TRANSIENT)
 
-    def _handle_deactivate_rule(self, window: sublime.Window, args: List[str], done: Callable[[], None]) -> bool:
+    def _handle_deactivate_rule(self, window: sublime.Window, args: List[str], done: Callable[[], None]) -> None:
         data = window.project_data()
+        if data is None:
+            done()
+            return
         root = data
         rule = args[0]
         data = _deeper_dict(data, "settings")
@@ -116,14 +123,15 @@ class SonarLint(AbstractPlugin):
         window.set_project_data(root)
 
         def report_to_user() -> None:
-            fmt = 'The rule "{}" was added to the excluded list for SonarLint in your window project data. '\
-                  'If your window is maintained by a sublime project, the server should be restarted automatically. '\
-                  'Otherwise, you need to restart the server manually.'
+            fmt = "".join((
+                'The rule "{}" was added to the excluded list for SonarLint in your window project data. ',
+                'If your window is maintained by a sublime project, the server should be restarted automatically. ',
+                'Otherwise, you need to restart the server manually.'
+            ))
             sublime.message_dialog(fmt.format(rule))
             done()
 
         sublime.set_timeout(report_to_user)
-        return True
 
 
 def plugin_loaded() -> None:
