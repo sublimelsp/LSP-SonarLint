@@ -1,4 +1,5 @@
 {
+    // The startup command to spawn the language server subprocess.
     "command": [
         "java",
         "-jar",
@@ -10,6 +11,8 @@
         "${packages_uri}/${name}/sonar-python-plugin-3.9.0.9230.jar",
         "${packages_uri}/${name}/sonar-html-plugin-3.6.0.3106.jar"
     ],
+
+    // The kind of tabs that we attach to.
     "languages": [
         {
             "languageId": "java"
@@ -61,19 +64,122 @@
             "document_selector": "source.oraclesql" // https://github.com/TheEggi/Advanced-PLSQL ???
         }
     ],
+
+    // We want LSP to choose a random free port for us, and we want to act as a TCP server and await
+    // the spawned subprocess to connect to us as a TCP client.
     "tcp_port": -1,
+
+    // Server settings that are passed to the language server subprocess.
     "settings": {
+        // Extra properties that could be passed to the code analyzers. Only for advanced use cases.
         "sonarlint.analyzerProperties": {},
+        // Configure connection(s) to [SonarCloud](https://sonarcloud.io). For each connection,
+        // please provide:
+        // - `organizationKey`: the key of your SonarCloud organization
+        // - `token`: a personal authentication token ([How to generate
+        // one](https://docs.sonarcloud.io/advanced-setup/user-accounts/#user-tokens))
+        // Optionally specify a `connectionId` if you want to use multiple connections.
+        // Set `disableNotifications` to `true` to disable [Smart
+        // Notifications](https://docs.sonarcloud.io/advanced-setup/sonarlint-smart-notifications/).
+        // Don't forget to also configure the project binding for each workspace folder using
+        // configuration `#sonarlint.connectedMode.project#`.
+        // If you have projects in different SonarCloud organizations, simply declare multiple
+        // connections.
+        // Example:
+        //     "sonarlint.connectedMode.connections.sonarcloud": [
+        //       {
+        //         "organizationKey": "myOrg",
+        //         "token": "V2VkIE1..."
+        //       }
+        //     ]
         "sonarlint.connectedMode.connections.sonarcloud": [],
+        // Configure connection(s) to [SonarQube](https://sonarqube.org). For each connection,
+        // please provide:
+        // - `serverUrl`: your SonarQube server URL
+        // - `token`: a personal authentication token ([How to generate
+        // one](https://docs.sonarqube.org/latest/user-guide/user-token/))
+        // Optionally specify a `connectionId` if you want to use multiple connections.
+        // Set `disableNotifications` to `true` to disable [Smart
+        // Notifications](https://docs.sonarqube.org/latest/user-guide/connected-mode/).
+        // Don't forget to also configure project binding for each workspace folder using
+        // configuration `#sonarlint.connectedMode.project#`.
+        // Example:
+        //     "sonarlint.connectedMode.connections.sonarqube": [
+        //       {
+        //         "serverUrl": "https://sonar.mycompany.com",
+        //         "token": "V2VkIE1..."
+        //       }
+        //     ]
         "sonarlint.connectedMode.connections.sonarqube": [],
+        // Bind the current workspace folder to a [SonarQube](https://sonarqube.org) or
+        // [SonarCloud](https://sonarcloud.io) project. Requires connection details to be defined in
+        // the setting `#sonarlint.connectedMode.connections.sonarqube#` or
+        // `#sonarlint.connectedMode.connections.sonarcloud#`.
+        // Binding a workspace folder to a project allows to use the same rules and configuration
+        // that are defined in the server, as well as issue suppressions.
+        // Example:
+        //     "sonarlint.connectedMode.project": {
+        //       "projectKey": "my_project"
+        //     }
+        // Specify the `connectionId` only if you have defined multiple connections.
         "sonarlint.connectedMode.project": {},
+        // Configure one or more connection(s) to SonarQube/SonarCloud. For security reasons, the
+        // token should not be stored in SCM with workspace settings. The `serverId` can be any
+        // identifier and will be referenced in `#sonarlint.connectedMode.project#`.
+        // Example for SonarCloud:
+        //     "sonarlint.connectedMode.servers": [
+        //       {
+        //         "serverId": "my_orga_in_sonarcloud.io",
+        //         "serverUrl": "https://sonarcloud.io",
+        //         "organizationKey": "my_organization",
+        //         "token": "V2VkIE1..."
+        //       }
+        //     ]
+        // Example for SonarQube:
+        //     "sonarlint.connectedMode.servers": [
+        //       {
+        //         "serverId": "my_sonarqube",
+        //         "serverUrl": "https://sonar.mycompany.com",
+        //         "token": "V2VkIE1..."
+        //       }
+        //     ]
         "sonarlint.connectedMode.servers": [],
-        "sonarlint.disableTelemetry": true,
+        // Disable sending anonymous usage statistics to SonarSource. Click
+        // [here](https://github.com/SonarSource/sonarlint-vscode/blob/master/telemetry-sample.md)
+        // to see a sample of the data that are collected.
+        "sonarlint.disableTelemetry": false,
+        // Show analyzer's logs in the SonarLint output.
         "sonarlint.output.showAnalyzerLogs": false,
-        // Enable verbose log level (for both SonarLint and analyzer) in the
-        // SonarLint output.
+        // Enable verbose log level in the SonarLint output.
         "sonarlint.output.showVerboseLogs": false,
+        // Path to the active compilation database, e.g.
+        // `C:\\Repos\\MyProject\\compile_commands.json`
+        "sonarlint.pathToCompileCommands": "",
+        // Path to a Node.js executable (12.22.0 or more recent) used to analyze JavaScript and
+        // TypeScript code.
+        // On Windows, backslashes must be escaped, e.g. `C:\\Program
+        // Files\\NodeJS\\12-lts\\bin\\node.exe`
+        "sonarlint.pathToNodeExecutable": "",
+        // Customize applied rule set. This property contains a list of rules whose activation level
+        // or parameter values differ from the one provided by default. See _SonarLint Rules_ view
+        // for the full list of available rules. In connected mode, this configuration is overridden
+        // by the projects's quality profile, as configured on server side.
+        // Example:
+        //     "sonarlint.rules": {
+        //         "javascript:1481": {
+        //             "level": "off",
+        //         "javascript:S103": {
+        //             "level": "on",
+        //             "parameters": {
+        //                 "maximumLineLength": "120"
+        //             }
+        //         }
+        //     }
         "sonarlint.rules": {},
-        "sonarlint.testFilePattern": "",
+        // Files whose name match this [glob
+        // pattern](https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob) are
+        // considered as test files by analyzers. Most rules are *not* evaluated on test files.
+        // Example: `{**/test/**,**/*test*,**/*Test*}`
+        "sonarlint.testFilePattern": ""
     }
 }
