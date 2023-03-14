@@ -10,6 +10,12 @@ To use this package, you must have:
 - The [LSP](https://packagecontrol.io/packages/LSP) package.
 - Java in your $PATH
 
+## Installation (from source)
+
+1. Run `make` to download and combine the files to a single zip.
+2. Copy the files manually to your Sublime Text `Packages` directory, on mac this would be in `~/Library/Application Support/Sublime Text/Packages`
+3. Restart Sublime Text.
+
 ## Applicable Selectors
 
 SonarLint can lint various file types. The following [language IDs](https://github.com/sublimelsp/LSP/blob/st4000-exploration/language-ids.sublime-settings) are supported:
