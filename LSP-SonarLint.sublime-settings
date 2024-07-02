@@ -11,59 +11,7 @@
         "${packages_uri}/${name}/sonar-python-plugin-3.9.0.9230.jar",
         "${packages_uri}/${name}/sonar-html-plugin-3.6.0.3106.jar"
     ],
-
-    // The kind of tabs that we attach to.
-    "languages": [
-        {
-            "languageId": "java"
-        },
-        {
-            "languageId": "javascript",
-            "document_selector": "source.js"
-        },
-        {
-            "languageId": "javascriptreact",
-            "document_selector": "source.jsx"
-        },
-        {
-            "languageId": "php",
-            "document_selector": "embedding.php"
-        },
-        {
-            "languageId": "python"
-        },
-        {
-            "languageId": "typescript",
-            "document_selector": "source.ts"
-        },
-        {
-            "languageId": "typescriptreact",
-            "document_selector": "source.tsx"
-        },
-        {
-            "languageId": "vue",
-            "document_selector": "text.html.vue"
-        },
-        {
-            "languageId": "html",
-            "document_selector": "source.html | text.html.basic | text.html.ngx"
-        },
-        {
-            "languageId": "jsp",
-            "document_selector": "text.html.jsp"
-        },
-        {
-            "languageId": "apex" // https://github.com/joeferraro/MavensMate-SublimeText
-        },
-        {
-            "languageId": "plsql",
-            "document_selector": "source.plsql.oracle" // https://github.com/TheEggi/Advanced-PLSQL ???
-        },
-        {
-            "languageId": "oraclesql",
-            "document_selector": "source.oraclesql" // https://github.com/TheEggi/Advanced-PLSQL ???
-        }
-    ],
+    "selector": "source.js | source.jsx | source.ts | source.tsx | source.html | text.html.jsp | text.html.basic | text.html.ngx | text.html.vue | source.java | embedding.php | source.python | source.plsql.oracle | source.oraclesql",
 
     // We want LSP to choose a random free port for us, and we want to act as a TCP server and await
     // the spawned subprocess to connect to us as a TCP client.
