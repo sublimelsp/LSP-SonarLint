@@ -5,11 +5,11 @@
         "-jar",
         "${packages}/${name}/sonarlint-language-server-4.6.0.2652.jar",
         "${port}",
-        "${packages_uri}/${name}/sonar-javascript-plugin-9.1.1.17782.jar",
+        "${packages_uri}/${name}/sonar-javascript-plugin-9.9.0.19492.jar",
         "${packages_uri}/${name}/sonar-java-plugin-7.9.0.28969.jar",
         "${packages_uri}/${name}/sonar-php-plugin-3.9.0.6331.jar",
-        "${packages_uri}/${name}/sonar-python-plugin-3.9.0.9230.jar",
-        "${packages_uri}/${name}/sonar-html-plugin-3.6.0.3106.jar"
+        "${packages_uri}/${name}/sonar-python-plugin-4.1.0.11333.jar",
+        "${packages_uri}/${name}/sonar-html-plugin-3.7.1.3306.jar"
     ],
     "selector": "source.js | source.jsx | source.ts | source.tsx | source.html | text.html.jsp | text.html.basic | text.html.ngx | text.html.vue | source.java | embedding.php | source.python | source.plsql.oracle | source.oraclesql",
 
