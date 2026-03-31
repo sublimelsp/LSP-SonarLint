@@ -1,10 +1,18 @@
+from __future__ import annotations
+
 from LSP.plugin import AbstractPlugin
 from LSP.plugin import css
 from LSP.plugin import filename_to_uri
 from LSP.plugin import register_plugin
 from LSP.plugin import Session
 from LSP.plugin import unregister_plugin
-from LSP.plugin.core.typing import Optional, Any, Tuple, List, Dict, Mapping, Callable
+from LSP.plugin.core.typing import Any
+from LSP.plugin.core.typing import Callable
+from LSP.plugin.core.typing import Dict
+from LSP.plugin.core.typing import List
+from LSP.plugin.core.typing import Mapping
+from LSP.plugin.core.typing import Optional
+from LSP.plugin.core.typing import Tuple
 import html.parser
 import mdpopups
 import sublime
