@@ -6,13 +6,13 @@ from LSP.plugin import filename_to_uri
 from LSP.plugin import register_plugin
 from LSP.plugin import Session
 from LSP.plugin import unregister_plugin
-from LSP.plugin.core.typing import Any
-from LSP.plugin.core.typing import Callable
-from LSP.plugin.core.typing import Dict
-from LSP.plugin.core.typing import List
-from LSP.plugin.core.typing import Mapping
-from LSP.plugin.core.typing import Optional
-from LSP.plugin.core.typing import Tuple
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Tuple
 import html.parser
 import mdpopups
 import sublime
@@ -116,7 +116,7 @@ class SonarLint(AbstractPlugin):
 
     def _handle_deactivate_rule(self, window: sublime.Window, args: List[str], done: Callable[[], None]) -> None:
         data = window.project_data()
-        if data is None:
+        if data is None or not isinstance(data, dict):
             done()
             return
         root = data
