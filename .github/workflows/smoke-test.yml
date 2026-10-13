@@ -23,12 +23,16 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # The language server and analyzer jars are not committed; release builds download them with make.
+      - name: Install make
+        if: runner.os == 'Windows'
+        run: choco install make --no-progress
+
+      # The language server and analyzer jars are not committed. Download them like the release build does and put
+      # them where LSP-SonarLint.sublime-settings expects them, in the package root.
       - name: Download SonarLint jars
         shell: bash
         run: |
-          for jar in $(grep -o 'sonar[a-z-]*-[0-9.]*\.jar' LSP-SonarLint.sublime-settings | sort -u); do
-            curl -sSfL -o "$jar" "https://binaries.sonarsource.com/Distribution/${jar%-*}/$jar"
-          done
+          make jars
+          cp out/*.jar .
 
       - uses: sublimelsp/lsp_smoke_test@v1

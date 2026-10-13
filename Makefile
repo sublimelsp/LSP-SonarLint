@@ -5,13 +5,16 @@ PHP_PLUGIN = 3.9.0.6331
 PYTHON_PLUGIN = 3.9.0.9230
 HTML_PLUGIN = 3.6.0.3106
 
-OUT_FILES = \
+JARS = \
 	out/sonarlint-language-server-$(LANGUAGE_SERVER).jar \
 	out/sonar-javascript-plugin-$(JAVASCRIPT_PLUGIN).jar \
 	out/sonar-java-plugin-$(JAVA_PLUGIN).jar \
 	out/sonar-php-plugin-$(PHP_PLUGIN).jar \
 	out/sonar-python-plugin-$(PYTHON_PLUGIN).jar \
-	out/sonar-html-plugin-$(HTML_PLUGIN).jar \
+	out/sonar-html-plugin-$(HTML_PLUGIN).jar
+
+OUT_FILES = \
+	$(JARS) \
 	out/LSP-SonarLint.sublime-settings \
 	out/LSP-SonarLint.sublime-commands \
 	out/plugin.py \
@@ -20,6 +23,9 @@ OUT_FILES = \
 	out/.no-sublime-package
 
 all: out/release.zip
+
+# Only the language server and analyzer jars, e.g. to run the package from a checkout.
+jars: $(JARS)
 
 out/release.zip: $(OUT_FILES)
 	cd out && zip -q -r release.zip .
@@ -68,4 +74,4 @@ out:
 clean:
 	rm -rf out
 
-.PHONY: all clean
+.PHONY: all clean jars
