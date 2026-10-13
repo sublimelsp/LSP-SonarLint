@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from LSP.plugin import AbstractPlugin
+from LSP.plugin import command_handler
 from LSP.plugin import css
 from LSP.plugin import filename_to_uri
-from LSP.plugin import register_plugin
+from LSP.plugin import LspPlugin
+from LSP.plugin import OnPreStartContext
+from LSP.plugin import PackagedTask
+from LSP.plugin import Promise
 from LSP.plugin import Session
-from LSP.plugin import unregister_plugin
 from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
-from typing import Mapping
 from typing import Optional
 from typing import Tuple
 import html.parser
@@ -62,36 +63,33 @@ class HTMLParser(html.parser.HTMLParser):
         self.result += data
 
 
-class SonarLint(AbstractPlugin):
+class SonarLint(LspPlugin):
     @classmethod
-    def name(cls) -> str:
-        return cls.__name__
-
-    @classmethod
-    def additional_variables(cls) -> Optional[Dict[str, str]]:
-        return {
+    def on_pre_start_async(cls, context: OnPreStartContext) -> None:
+        context.variables.update({
             "packages_uri": filename_to_uri(sublime.packages_path()),
-            "name": "LSP-{}".format(cls.name())
-        }
+            "name": cls.name
+        })
 
-    def on_pre_server_command(self, command: Mapping[str, Any], done: Callable[[], None]) -> bool:
+    @command_handler("SonarLint.OpenRuleDesc")
+    def on_open_rule_description(self, arguments: Optional[List[Any]]) -> Promise[None]:
         session = self.weaksession()
-        if not session:
-            return False
-        window = session.window
-        cmd = command["command"]
-        args = command["arguments"]
-        if cmd == "SonarLint.OpenRuleDesc":
+        if session and arguments:
             try:
-                self._handle_open_rule_description(session, window, args)
+                self._handle_open_rule_description(session, session.window, arguments)
             except Exception:
                 pass
-            done()
-            return True
-        if cmd == "SonarLint.DeactivateRule":
-            self._handle_deactivate_rule(window, args, done)
-            return True
-        return False
+        return Promise.resolve(None)
+
+    @command_handler("SonarLint.DeactivateRule")
+    def on_deactivate_rule(self, arguments: Optional[List[Any]]) -> Promise[None]:
+        session = self.weaksession()
+        if not session or not arguments:
+            return Promise.resolve(None)
+        task: PackagedTask[None] = Promise.packaged_task()
+        promise, resolve = task
+        self._handle_deactivate_rule(session.window, arguments, lambda: resolve(None))
+        return promise
 
     def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: List[str]) -> None:
         view = window.active_view()
@@ -123,7 +121,7 @@ class SonarLint(AbstractPlugin):
         rule = args[0]
         data = _deeper_dict(data, "settings")
         data = _deeper_dict(data, "LSP")
-        data = _deeper_dict(data, self.name())
+        data = _deeper_dict(data, self.name)
         data = _deeper_dict(data, "settings")
         data = _deeper_dict(data, "sonarlint")
         data = _deeper_dict(data, "rules")
@@ -143,8 +141,8 @@ class SonarLint(AbstractPlugin):
 
 
 def plugin_loaded() -> None:
-    register_plugin(SonarLint)
+    SonarLint.register()
 
 
 def plugin_unloaded() -> None:
-    unregister_plugin(SonarLint)
+    SonarLint.unregister()
