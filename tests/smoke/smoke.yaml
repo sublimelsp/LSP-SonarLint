@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/sublimelsp/lsp_smoke_test/v1/smoke.schema.json
 file: sample.py
 # The session name until the package is migrated to LspPlugin.
-server: SonarLint
+session_name: SonarLint
 # python:S1481: Remove the unused local variable "unused".
 expected_diagnostics:
   code: python:S1481
