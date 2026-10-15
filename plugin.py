@@ -10,16 +10,12 @@ from LSP.plugin import Promise
 from LSP.plugin import Session
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Tuple
 import html.parser
 import mdpopups
 import sublime
 
 
-def _deeper_dict(d: Dict[str, Any], key: str) -> Dict[str, Any]:
+def _deeper_dict(d: dict[str, Any], key: str) -> dict[str, Any]:
     if key not in d:
         d[key] = {}
     return d[key]
@@ -35,7 +31,7 @@ class HTMLParser(html.parser.HTMLParser):
         self.language_id = language_id
         self.result = ""
 
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag == "pre":
             self.result += "```{}".format(self.language_id)
         elif tag == "code":
@@ -72,7 +68,7 @@ class SonarLint(LspPlugin):
         })
 
     @command_handler("SonarLint.OpenRuleDesc")
-    def on_open_rule_description(self, arguments: Optional[List[Any]]) -> Promise[None]:
+    def on_open_rule_description(self, arguments: list[Any] | None) -> Promise[None]:
         session = self.weaksession()
         if session and arguments:
             try:
@@ -82,7 +78,7 @@ class SonarLint(LspPlugin):
         return Promise.resolve(None)
 
     @command_handler("SonarLint.DeactivateRule")
-    def on_deactivate_rule(self, arguments: Optional[List[Any]]) -> Promise[None]:
+    def on_deactivate_rule(self, arguments: list[Any] | None) -> Promise[None]:
         session = self.weaksession()
         if not session or not arguments:
             return Promise.resolve(None)
@@ -91,7 +87,7 @@ class SonarLint(LspPlugin):
         self._handle_deactivate_rule(session.window, arguments, lambda: resolve(None))
         return promise
 
-    def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: List[str]) -> None:
+    def _handle_open_rule_description(self, session: Session, window: sublime.Window, args: list[str]) -> None:
         view = window.active_view()
         if not view:
             return
@@ -112,7 +108,7 @@ class SonarLint(LspPlugin):
             wrapper_class=css().sheets_classname,
             flags=sublime.ADD_TO_SELECTION | sublime.SEMI_TRANSIENT)
 
-    def _handle_deactivate_rule(self, window: sublime.Window, args: List[str], done: Callable[[], None]) -> None:
+    def _handle_deactivate_rule(self, window: sublime.Window, args: list[str], done: Callable[[], None]) -> None:
         data = window.project_data()
         if data is None or not isinstance(data, dict):
             done()
