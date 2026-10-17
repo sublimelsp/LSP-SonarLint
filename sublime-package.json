@@ -311,7 +311,7 @@
               "properties": {
                 "LSP": {
                   "properties": {
-                    "SonarLint": {
+                    "LSP-SonarLint": {
                       "$ref": "sublime://settings/LSP-SonarLint#/definitions/PluginConfig"
                     }
                   }
